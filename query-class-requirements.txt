@@ -1,0 +1,7 @@
+light-client
+--extra-index-url https://artifactory.am.lilly.com/artifactory/api/pypi/lrl-pypi/simple
+pandas
+streamlit
+requests>=2.27,<3
+python-dotenv
+jira

@@ -1,0 +1,15 @@
+# =============================================================
+# Query Classification Agent — Environment Variables
+# =============================================================
+# Copy this file to .env and fill in your values:
+#   cp .env.example .env
+#
+# NEVER commit the actual .env file to git.
+# =============================================================
+
+# --- JIRA Configuration ---
+JIRA_SERVER=https://jira.lilly.com
+JIRA_PROJECT=BIOBOT
+JIRA_USER=your-service-account@lilly.com
+JIRA_TOKEN=your-api-token
+JIRA_ISSUE_TYPE=Data Request

@@ -1,0 +1,11 @@
+@echo off
+echo Setting environment variables...
+
+set JIRA_SERVER="https://jira.lilly.com"
+set JIRA_PROJECT="BIOBOT"
+set JIRA_USER="your-service-account@lilly.com"
+set JIRA_TOKEN="your-api-token"
+set JIRA_ISSUE_TYPE="Data Request"
+
+echo Starting Query Classification Agent...
+python -m streamlit run app.py
