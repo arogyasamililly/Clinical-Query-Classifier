@@ -22,5 +22,4 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Architecture
 - Based on BIO Bot multi-agent pattern
-- Adapted Nick Fuller's SCDM 2025 classification framework
-- Replaced GPT-4.1 direct calls with Cortex API pipeline
+- Uses Cortex LIGHTClient with 3-agent pipeline (Validator → Classifier → Summarizer)

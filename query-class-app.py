@@ -20,7 +20,7 @@ JIRA_ISSUE_TYPE = os.environ.get("JIRA_ISSUE_TYPE", "Task")
 JIRA_USER = os.environ.get("JIRA_USER")
 JIRA_TOKEN = os.environ.get("JIRA_TOKEN")
 
-# --- Classification Categories (Nick Fuller's SCDM 2025 Framework) ---
+# --- Classification Categories ---
 CATEGORIES = {
     "Affirmative": {
         "description": "Site acknowledged and indicates correction/update was made",
@@ -154,7 +154,7 @@ Site Response: {site_response}
 def get_classification_prompt():
     """
     Agent 2: Classifies site responses into categories.
-    This is the core classification prompt based on Nick Fuller's SCDM 2025 framework.
+    This is the core classification prompt for the query classification agent.
     """
     return """
 You are an expert clinical trial query classification agent. Your job is to classify 
@@ -315,8 +315,7 @@ def main():
     st.header("🏥 Query Classification Agent")
     st.write(
         "Upload a Query Detail Listing CSV → Agent classifies site responses → "
-        "Review, analyze, and export. "
-        "*Based on Nick Fuller's SCDM 2025 framework.*"
+        "Review, analyze, and export."
     )
 
     client = initialize_cortex_client()
