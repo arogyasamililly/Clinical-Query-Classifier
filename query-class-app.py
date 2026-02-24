@@ -2,7 +2,16 @@ import streamlit as st
 import pandas as pd
 import json
 import re
+import logging
 from light_client import LIGHTClient
+
+# --- Logging Setup ---
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+    datefmt="%H:%M:%S",
+)
+logger = logging.getLogger(__name__)
 
 # --- Configuration Constants ---
 CORTEX_CONFIG = {
@@ -68,54 +77,43 @@ def initialize_cortex_client():
 def run_cortex_query(client, full_prompt):
     """Generic function to call the Cortex API and handle errors."""
     try:
+        logger.info("Calling Cortex API...")
         response = client.post(
             f"{CORTEX_CONFIG['base_url']}/model/ask/{CORTEX_CONFIG['config']}",
             params={"model": CORTEX_CONFIG["model"]},
             data={"q": full_prompt},
         )
         response.raise_for_status()
-        return response.json().get("message", response.text)
+        result = response.json().get("message", response.text)
+        logger.info(f"Cortex response received ({len(result)} chars)")
+        return result
     except Exception as e:
+        logger.error(f"Cortex API error: {e}")
         st.error(f"An error occurred while calling the Cortex API: {e}")
         return None
+
+
+def validate_response_local(site_response):
+    """
+    Local validation — no API call needed.
+    Returns True if the response is meaningful enough to classify.
+    """
+    if not site_response:
+        return False
+    text = str(site_response).strip().lower()
+    if text in ["", "nan", "none", "null", "na"]:
+        return False
+    if len(text) < 1:
+        return False
+    # Pure numbers with no context
+    if text.replace(".", "").replace("-", "").isdigit():
+        return False
+    return True
 
 
 # =============================================================================
 # AGENT PROMPTS
 # =============================================================================
-
-def get_validation_prompt(site_response, crf_item=""):
-    """
-    Agent 1: Validates if the site response is meaningful enough to classify.
-    Filters out blank, gibberish, or non-response entries.
-    """
-    return f"""
-You are a clinical trial data validation agent. Your job is to determine if a site 
-response to a data query is meaningful enough to classify.
-
----
-Instructions:
-1. Analyze the site response text below.
-2. If the response contains meaningful text that can be classified (even short 
-   responses like "done" or "updated"), respond ONLY with: VALID
-3. If the response is blank, contains only symbols/numbers with no context, 
-   or is clearly not a response to a query, respond with: 
-   INVALID: [Brief reason]
-
----
-Examples:
-- Site Response: "corrected" → VALID
-- Site Response: "I can't find this field, please help" → VALID
-- Site Response: "medication is ongoing" → VALID
-- Site Response: "" → INVALID: Empty response
-- Site Response: "123456" → INVALID: Numeric only, not a meaningful response
-- Site Response: "asdfghjkl" → INVALID: Gibberish text
-
----
-CRF Item: {crf_item}
-Site Response: {site_response}
-"""
-
 
 def get_classification_prompt():
     """
@@ -240,6 +238,8 @@ def classify_batch(client, rows, batch_size=15):
             if not response_text:
                 raise Exception("Empty response from Cortex")
 
+            logger.info(f"Raw response: {response_text[:200]}...")
+
             # Clean markdown fences if present
             cleaned = response_text.strip()
             if cleaned.startswith("```"):
@@ -259,6 +259,7 @@ def classify_batch(client, rows, batch_size=15):
             all_results.extend(batch_results)
 
         except (json.JSONDecodeError, Exception) as e:
+            logger.error(f"Batch classification failed: {e}")
             # Fallback: mark batch as Miscellaneous
             for j in range(len(batch)):
                 all_results.append(
@@ -370,36 +371,16 @@ def main():
 
             df = st.session_state["df_raw"].copy()
 
-            # ── Agent 1: Validation ─────────────────────────────
+            # ── Agent 1: Validation (LOCAL — no API calls) ────────
             st.subheader("🕵️ Agent 1: Validation")
-            valid_mask = []
+            logger.info(f"Starting validation for {len(df)} rows...")
 
             with st.spinner("Agent 1 is validating responses..."):
-                progress = st.progress(0, text="Validating...")
-                for i, row in df.iterrows():
-                    site_resp = str(row.get(col_site_response, ""))
-                    crf = str(row.get(col_crf_item, ""))
+                df["Is_Valid"] = df[col_site_response].apply(validate_response_local)
 
-                    # Quick local validation for obvious cases
-                    if not site_resp.strip() or site_resp.strip().lower() in ["nan", "none", ""]:
-                        valid_mask.append(False)
-                    else:
-                        # Use Agent 1 for borderline cases via Cortex
-                        prompt = get_validation_prompt(site_resp, crf)
-                        result = run_cortex_query(client, prompt)
-                        valid_mask.append(
-                            result is not None and "VALID" in result.upper()
-                        )
-
-                    if (i + 1) % 10 == 0 or i == len(df) - 1:
-                        progress.progress(
-                            (i + 1) / len(df),
-                            text=f"Validated {i + 1}/{len(df)} rows...",
-                        )
-
-            df["Is_Valid"] = valid_mask
-            valid_count = sum(valid_mask)
+            valid_count = df["Is_Valid"].sum()
             invalid_count = len(df) - valid_count
+            logger.info(f"Validation complete: {valid_count} valid, {invalid_count} invalid")
             st.success(
                 f"✅ Validation complete: **{valid_count}** valid, **{invalid_count}** invalid/empty"
             )
@@ -425,9 +406,13 @@ def main():
                 progress2 = st.progress(0, text="Classifying...")
                 all_results = []
                 total_batches = (len(rows_to_classify) + batch_size - 1) // batch_size
+                logger.info(f"Starting classification: {len(rows_to_classify)} rows in {total_batches} batches (batch_size={batch_size})")
 
                 for b_idx in range(0, len(rows_to_classify), batch_size):
                     batch = rows_to_classify[b_idx : b_idx + batch_size]
+                    batch_num = (b_idx // batch_size) + 1
+                    logger.info(f"Classifying batch {batch_num}/{total_batches} ({len(batch)} rows)...")
+
                     batch_results = classify_batch(client, batch, batch_size=len(batch))
 
                     # Re-index to global positions
@@ -435,7 +420,7 @@ def main():
                         r["index"] = b_idx + j
                     all_results.extend(batch_results)
 
-                    batch_num = (b_idx // batch_size) + 1
+                    logger.info(f"Batch {batch_num}/{total_batches} complete")
                     progress2.progress(
                         batch_num / total_batches,
                         text=f"Classified {min(b_idx + batch_size, len(rows_to_classify))}/{len(rows_to_classify)}...",
@@ -462,6 +447,7 @@ def main():
             # ── Agent 3: Summary ────────────────────────────────
             st.subheader("📝 Agent 3: Summary Generation")
             class_counts = df_valid["LLM_Classification"].value_counts().to_dict()
+            logger.info(f"Classification counts: {class_counts}")
 
             confused_crf = {}
             if col_crf_item in df_valid.columns:
@@ -470,6 +456,7 @@ def main():
                     confused_crf = confused_df[col_crf_item].value_counts().head(10).to_dict()
 
             with st.spinner("Agent 3 is generating summary..."):
+                logger.info("Generating summary report...")
                 summary_prompt = get_summary_prompt(class_counts, confused_crf, len(df_valid))
                 summary_text = run_cortex_query(client, summary_prompt)
 
@@ -479,6 +466,7 @@ def main():
                 st.info("Summary generation skipped.")
 
             st.success("✅ Classification complete! Check the Results and Analytics tabs.")
+            logger.info("=== CLASSIFICATION PIPELINE COMPLETE ===")
 
     # =================================================================
     # TAB 2: Results
