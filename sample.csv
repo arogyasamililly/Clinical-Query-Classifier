@@ -1,0 +1,30 @@
+Query ID,Study Alias,Site,Subject,Visit,CRF Item,Original Query,Query Role,Site Response
+11798,ABC-XY-1234,Site 101,101-001,Visit 3 (Week 12),Dispensed Amount,"Dispensed amount at Visit 3 was 16, but per SoA 12 was expected. Please verify and correct.",Data Mgmt,corrected
+98432,ABC-XY-1234,Site 101,101-003,Visit 5 (Week 24),Visit Date,Visit date is missing. Please enter the date of this visit.,System,updated
+209789,ABC-XY-1234,Site 102,102-007,Visit 2 (Week 4),AE End Date,AE End Date is missing but AE Outcome is marked as Recovered. Please provide the end date.,Data Mgmt,done
+10124,XYZ-AB-4321,Site 201,201-002,Visit 1 (Screening),Subject Status,Subject status is incomplete. Please update to reflect current enrollment status.,Data Mgmt,I was unable to complete this. Where do I update subject status?
+84789,XYZ-AB-4321,Site 201,201-005,Visit 4 (Week 16),Interruption Reason,Treatment interruption reason does not match the visit data. Please clarify.,System,please clarify what needs to be updated here
+101172,XYZ-AB-4321,Site 202,202-011,Visit 1 (Screening),Prespecified Medical History Term,Prespecified medical history term is blank. Please enter the appropriate term.,Data Mgmt,item is not appearing for me on the form. Can you please open it?
+70158,GHIJ-KL-5678,Site 301,301-004,Visit 6 (Week 30),Conmed End Date,Concomitant medication end date is missing but medication is marked as completed.,Data Mgmt,Medication is ongoing
+179664,GHIJ-KL-5678,Site 301,301-009,Visit 3 (Week 12),AE Term,AE term is vague. Please provide a specific medical diagnosis.,Data Mgmt,surgery was due to a pre-existing condition and is not related to study drug
+201533,GHIJ-KL-5678,Site 302,302-001,Visit 5 (Week 24),AE Term,"AE was reported, but severity and relationship to study drug are missing.",Data Mgmt,deemed not to be clinically relevant by the investigator
+45120,ABC-XY-1234,Site 101,101-006,Visit 4 (Week 16),Lab Collection Date,Lab collection date does not match the visit date. Please verify.,System,Date is corrected
+154841,ABC-XY-1234,Site 102,102-003,Visit 2 (Week 4),Vital Signs - Systolic BP,Systolic BP recorded as 350 mmHg. This value appears out of range. Please verify and correct.,Data Mgmt,Value has been updated to 135 mmHg
+88321,XYZ-AB-4321,Site 201,201-008,Visit 3 (Week 12),Dosing Date,Dosing date is after the visit date. Please confirm the correct date.,System,How do I change this? The field seems locked.
+33019,XYZ-AB-4321,Site 202,202-006,Visit 1 (Screening),Informed Consent Date,"Informed consent date (2025-03-20) is after the screening date (2025-03-18). Please clarify.",Data Mgmt,Consent date was entered incorrectly. Corrected to 2025-03-17.
+67234,GHIJ-KL-5678,Site 301,301-012,Visit 2 (Week 4),Weight,Weight value is blank for this visit. Please enter the value from source.,System,will follow up
+91456,GHIJ-KL-5678,Site 302,302-008,Visit 4 (Week 16),AE Outcome,AE outcome is missing. Please update with the current outcome.,Data Mgmt,Patient has not yet recovered. Adverse event is ongoing and being monitored.
+22087,ABC-XY-1234,Site 103,103-002,Visit 1 (Screening),Demographics - Ethnicity,Ethnicity field is blank. This is a required field per protocol. Please complete.,System,completed
+77654,ABC-XY-1234,Site 103,103-005,Visit 5 (Week 24),ECG Date,ECG date does not match the scheduled visit window. Please verify.,Data Mgmt,I don't understand the question. What visit window is it referring to?
+55892,XYZ-AB-4321,Site 203,203-001,Visit 2 (Week 4),Prior Medication,Prior medication entry appears to be a duplicate. Please review and remove if incorrect.,System,see attached source document
+41678,GHIJ-KL-5678,Site 303,303-003,Visit 3 (Week 12),SAE Onset Date,"SAE reported but onset date is missing. This is required for safety reporting timelines. Please provide immediately.",Data Mgmt,The SAE onset was 2025-06-14. Patient was hospitalized for chest pain unrelated to study drug.
+63291,XYZ-AB-4321,Site 203,203-007,Visit 6 (Week 30),Treatment Compliance,Treatment compliance percentage appears unusually low (12%). Please verify.,System,pending review by the coordinator
+19847,ABC-XY-1234,Site 101,101-009,Visit 2 (Week 4),Conmed Start Date,Concomitant medication start date is missing. Please provide.,Data Mgmt,fixed
+82103,GHIJ-KL-5678,Site 302,302-010,Visit 1 (Screening),Medical History,Medical history entry for hypertension is missing onset date. Please provide approximate date.,Data Mgmt,Patient has had hypertension for approximately 10 years. Onset date entered as 2015-01-01.
+37456,XYZ-AB-4321,Site 201,201-014,Visit 4 (Week 16),Vital Signs - Heart Rate,Heart rate recorded as 210 bpm. This is significantly out of range. Please verify.,System,Value corrected. Actual heart rate was 72 bpm. Transcription error.
+48921,ABC-XY-1234,Site 103,103-008,Visit 3 (Week 12),AE Severity,AE severity is marked as Mild but the AE led to hospitalization. Please reconcile.,Data Mgmt,The hospitalization was for an unrelated condition. AE severity remains mild per investigator assessment.
+56340,GHIJ-KL-5678,Site 303,303-006,Visit 5 (Week 24),Study Drug Return,Study drug return count does not match dispensing records. Please verify.,System,N/A
+72815,XYZ-AB-4321,Site 202,202-015,Visit 2 (Week 4),Physical Exam,Physical exam findings field is blank. Please complete or mark as Not Done.,Data Mgmt,Where is this form? I cannot find it in the system.
+99103,ABC-XY-1234,Site 102,102-012,Visit 6 (Week 30),End of Study,End of study reason is blank. Subject appears to have completed. Please confirm.,System,Subject completed per protocol. Updated.
+15678,GHIJ-KL-5678,Site 301,301-016,Visit 3 (Week 12),Conmed Indication,"Concomitant medication indication is blank. Please provide the reason for the medication.",Data Mgmt,Medication was prescribed for migraine prophylaxis
+28943,XYZ-AB-4321,Site 203,203-010,Visit 1 (Screening),Eligibility Criteria,Inclusion criterion 4 response is missing. Please confirm eligibility status.,System,I'm not sure what criterion 4 refers to. Can someone clarify?
