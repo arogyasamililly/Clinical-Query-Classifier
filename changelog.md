@@ -16,9 +16,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Analytics dashboard with CRF confusion analysis
 - Reinforcement via Human Feedback (RHF) review tab
 - CSV export (full and per-category)
-- JIRA integration for high confusion rate alerts
 - Guide tab for CDAs and DMs
-- Cortex LIGHTClient integration (gpt-5)
+- Cortex LIGHTClient integration
 
 ### Architecture
 - Based on BIO Bot multi-agent pattern

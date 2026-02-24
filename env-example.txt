@@ -7,9 +7,6 @@
 # NEVER commit the actual .env file to git.
 # =============================================================
 
-# --- JIRA Configuration ---
-JIRA_SERVER=https://jira.lilly.com
-JIRA_PROJECT=BIOBOT
-JIRA_USER=your-service-account@lilly.com
-JIRA_TOKEN=your-api-token
-JIRA_ISSUE_TYPE=Data Request
+# Currently no environment variables required.
+# The app uses Cortex LIGHTClient for authentication.
+# Add any future config variables here.

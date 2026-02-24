@@ -2,9 +2,7 @@ import streamlit as st
 import pandas as pd
 import json
 import re
-import os
 from light_client import LIGHTClient
-from jira import JIRA
 
 # --- Configuration Constants ---
 CORTEX_CONFIG = {
@@ -12,13 +10,6 @@ CORTEX_CONFIG = {
     "config": "md3-raw",
     "model": "gpt-5",
 }
-
-# --- JIRA Configuration (Reads from Environment Variables) ---
-JIRA_SERVER = os.environ.get("JIRA_SERVER")
-JIRA_PROJECT = os.environ.get("JIRA_PROJECT")
-JIRA_ISSUE_TYPE = os.environ.get("JIRA_ISSUE_TYPE", "Task")
-JIRA_USER = os.environ.get("JIRA_USER")
-JIRA_TOKEN = os.environ.get("JIRA_TOKEN")
 
 # --- Classification Categories ---
 CATEGORIES = {
@@ -86,31 +77,6 @@ def run_cortex_query(client, full_prompt):
         return response.json().get("message", response.text)
     except Exception as e:
         st.error(f"An error occurred while calling the Cortex API: {e}")
-        return None
-
-
-def create_jira_ticket(query_summary, details):
-    """Creates a JIRA ticket for flagged classification issues."""
-    if not all([JIRA_SERVER, JIRA_PROJECT, JIRA_USER, JIRA_TOKEN]):
-        st.warning("JIRA configuration is missing. Skipping ticket creation.")
-        return None
-
-    try:
-        jira_client = JIRA(
-            server=JIRA_SERVER, basic_auth=(JIRA_USER, JIRA_TOKEN)
-        )
-
-        issue_dict = {
-            "project": {"key": JIRA_PROJECT},
-            "summary": f"Query Agent - Classification Review: {query_summary[:60]}...",
-            "description": details,
-            "issuetype": {"name": JIRA_ISSUE_TYPE},
-        }
-
-        new_issue = jira_client.create_issue(fields=issue_dict)
-        return new_issue.key
-    except Exception as e:
-        st.error(f"Failed to create JIRA ticket: {e}")
         return None
 
 
@@ -300,7 +266,7 @@ def classify_batch(client, rows, batch_size=15):
                         "index": i + j,
                         "classification": "Miscellaneous",
                         "confidence": 0.0,
-                        "reasoning": f"Classification failed — manual review needed",
+                        "reasoning": "Classification failed — manual review needed",
                     }
                 )
 
@@ -511,17 +477,6 @@ def main():
                 st.markdown(summary_text)
             else:
                 st.info("Summary generation skipped.")
-
-            # Create JIRA ticket if high confusion rate
-            if class_counts.get("Confused", 0) / max(len(df_valid), 1) > 0.3:
-                ticket_key = create_jira_ticket(
-                    "High site confusion rate detected",
-                    f"Classification results show {class_counts.get('Confused', 0)} confused "
-                    f"responses out of {len(df_valid)} total. "
-                    f"Top confused CRF items: {json.dumps(confused_crf)}",
-                )
-                if ticket_key:
-                    st.info(f"📋 JIRA ticket {ticket_key} created — high confusion rate flagged for review.")
 
             st.success("✅ Classification complete! Check the Results and Analytics tabs.")
 
@@ -769,13 +724,11 @@ Upload your **Query Detail Listing** (CSV) and the AI classifies each site respo
 - "Updated" responses still need DM verification — check audit trail
 - Use the **Confused** category to find CRF design or training gaps
 - **Medically Related** responses can supplement MRLs for medical review
-- If confusion rate exceeds 30%, a JIRA ticket is auto-created for review
 
 ### Setting Up for Your Own Study
 1. Install: `pip install -r requirements.txt`
-2. Set JIRA environment variables (see `run.bat`)
-3. Run: `python -m streamlit run app.py`
-4. Upload your study's Query Detail Listing CSV
+2. Run: `python -m streamlit run app.py`
+3. Upload your study's Query Detail Listing CSV
         """)
 
 

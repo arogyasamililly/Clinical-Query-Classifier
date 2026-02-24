@@ -20,13 +20,7 @@ venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 ```
 
-4. Set up environment variables
-```bash
-cp .env.example .env
-# Edit .env with your credentials
-```
-
-5. Run the app
+4. Run the app
 ```bash
 python -m streamlit run app.py
 ```
@@ -38,7 +32,7 @@ query-classification-agent/
 ├── app.py                  # Main Streamlit app (3-agent pipeline)
 ├── requirements.txt        # Python dependencies
 ├── manifest.json           # Deployment manifest
-├── run.bat                 # Windows launcher with env vars
+├── run.bat                 # Windows launcher
 ├── .env.example            # Template for environment variables
 ├── .gitignore              # Git ignore rules
 ├── README.md               # Project documentation
@@ -86,10 +80,8 @@ CATEGORIES = {
 
 ## How to Change the AI Model
 
-The app uses Cortex with `gpt-5` by default. To change:
+Open `app.py` and find `CORTEX_CONFIG` at the top:
 
-1. Open `app.py`
-2. Find `CORTEX_CONFIG` at the top:
 ```python
 CORTEX_CONFIG = {
     "base_url": "https://api.cortex.lilly.com",
@@ -97,7 +89,8 @@ CORTEX_CONFIG = {
     "model": "gpt-5",    # Change this
 }
 ```
-3. Replace `"gpt-5"` with your preferred model
+
+Replace `"gpt-5"` with your preferred model.
 
 ## Data Safety
 

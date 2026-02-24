@@ -4,4 +4,3 @@ pandas
 streamlit
 requests>=2.27,<3
 python-dotenv
-jira
